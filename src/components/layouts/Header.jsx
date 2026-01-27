@@ -3,28 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { DataContext } from '../../context/employeeContext';
 import { toast } from 'react-toastify';
 
-const Header = (props) => {
+const Header = () => {
 
-    const { setUser } = useContext(DataContext);
+    const { logOutUser, loggedInUserData } = useContext(DataContext);
+    console.log(loggedInUserData)
 
     const navigate = useNavigate();
+
     const logOutButton = async () => {
-        const res = await fetch('https://employee-management-system-backend-eta.vercel.app/logout', {
-            method: 'POST',
-            credentials: 'include',
-        });
-
-        const data = await res.json();
-        console.log(data.message);
-        toast("Logged out successfully!");
-
-        setUser(null);
+        await logOutUser();
+        toast.success("Logged Out Successfully");
         navigate('/login');
     }
+
     return (
         <div className='flex items-center justify-between p-8'>
             <div>
-                <h2 className='text-white text-2xl'>Hello <span className='text-3xl font-semibold block'>{props.username} 👋</span></h2>
+                <h2 className='text-white text-2xl'>Hello <span className='text-3xl font-semibold block'>{loggedInUserData?.username || 'User'} 👋</span></h2>
             </div>
             <button onClick={logOutButton} className='bg-red-500 text-white rounded-sm px-5 hover:bg-red-700 py-2 text-xl cursor-pointer'>Logout</button>
         </div>

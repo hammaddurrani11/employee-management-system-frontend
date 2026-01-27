@@ -11,44 +11,6 @@ import { DataContext } from './context/employeeContext';
 function App() {
   const { loggedInUserData } = useContext(DataContext);
 
-  // const navigate = useNavigate();
-  // const [userData, setUserData] = useState({})
-  // const [userName, setUserName] = useState('');
-
-  // useEffect(() => {
-  //   fetch('https://employee-management-system-backend-eta.vercel.app/auth/check', {
-  //     credentials: 'include'
-  //   })
-  //     .then(res => res.json())
-  //     .then(data => {
-  //       if (data.authenticated) {
-  //         if (data.user.role === 'admin') {
-  //           setUserName(data.user.username);
-  //           console.log(data.user.username);
-  //           navigate('/')
-  //         } else if (data.user.role === 'employee') {
-  //           setUserName(data.user.username)
-  //           navigate('/employee');
-  //           const employeeData = fetch('https://employee-management-system-backend-eta.vercel.app/fetch-loggedin-user', {
-  //             credentials: 'include'
-  //           })
-  //             .then(res => res.json())
-  //             .then(employeeData => {
-  //               if (!employeeData || employeeData.error) {
-  //                 console.log('User Not Found');
-  //               } else {
-  //                 setUserData(employeeData);
-  //               }
-  //             })
-  //         }
-  //       }
-  //       else {
-  //         navigate('/login');
-  //       }
-  //     })
-  // }, [])
-
-
   return (
     <>
       <ToastContainer />
@@ -58,28 +20,24 @@ function App() {
           exact
           path='/'
           element={
-            loggedInUserData?.role === 'admin' ?
-              <AdminDashboard /> :
-              <Navigate to='/login' replace />
+            <AdminDashboard />
           }
         />
         <Route
           exact
           path="/login"
-          element={!loggedInUserData ? <Login /> : <Navigate to="/" replace />}
+          element={<Login />}
         />
         <Route
           exact
           path="/register"
-          element={!loggedInUserData ? <Register /> : <Navigate to="/" replace />}
+          element={<Register />}
         />
         <Route
           exact
           path="/employee"
           element={
-            loggedInUserData?.role === 'employee' ?
-              <EmployeeDashboard /> :
-              <Navigate to='/login' replace />
+            <EmployeeDashboard />
           }
         />
       </Routes>

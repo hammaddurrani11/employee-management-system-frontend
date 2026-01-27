@@ -1,6 +1,5 @@
-import React, { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { DataContext } from '../../context/employeeContext';
-import { handleError } from '../utils/apiHelper';
 
 const AllTasks = () => {
     const [username, setUsername] = useState('');
@@ -8,51 +7,57 @@ const AllTasks = () => {
     const [password, setPassword] = useState('');
     const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-    const { employees, fetchData } = useContext(DataContext);
+    const { fetchAllEmployeeData, employeesData } = useContext(DataContext);
+
+    useEffect(() => {
+        fetchAllEmployeeData();
+    },[])
+
+    console.log(employeesData);
 
     const updateEmployee = async (e) => {
-        e.preventDefault();
-        const res = await fetch(`https://employee-management-system-backend-eta.vercel.app/update-employee/${selectedEmployee._id}`, {
-            method: "put",
-            headers: {
-                'Content-type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                username: username,
-                email: email,
-                password: password
-            })
-        })
+        // e.preventDefault();
+        // const res = await fetch(`https://employee-management-system-backend-eta.vercel.app/update-employee/${selectedEmployee._id}`, {
+        //     method: "put",
+        //     headers: {
+        //         'Content-type': 'application/json'
+        //     },
+        //     credentials: 'include',
+        //     body: JSON.stringify({
+        //         username: username,
+        //         email: email,
+        //         password: password
+        //     })
+        // })
 
-        const data = await res.json();
+        // const data = await res.json();
 
-        if (!res.ok) {
-            handleError(res, data);
-        }
-        else {
-            console.log("Updated", data);
-            closePop();
-            fetchData();
-        }
+        // if (!res.ok) {
+        //     handleError(res, data);
+        // }
+        // else {
+        //     console.log("Updated", data);
+        //     closePop();
+        //     fetchData();
+        // }
 
     }
 
     const deleteEmployee = async (elem) => {
-        const res = await fetch(`https://employee-management-system-backend-eta.vercel.app/delete-employee/${elem._id}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
+        // const res = await fetch(`https://employee-management-system-backend-eta.vercel.app/delete-employee/${elem._id}`, {
+        //     method: 'DELETE',
+        //     credentials: 'include'
+        // });
 
-        const data = await res.json();
+        // const data = await res.json();
 
-        if (!res.ok) {
-            handleError(res, data);
-        }
-        else {
-            console.log('Deleted', data);
-            fetchData();
-        }
+        // if (!res.ok) {
+        //     handleError(res, data);
+        // }
+        // else {
+        //     console.log('Deleted', data);
+        //     fetchData();
+        // }
     }
 
     const showPop = (elem) => {
@@ -80,7 +85,7 @@ const AllTasks = () => {
                     <h3 className='w-1/4 text-md'>Actions</h3>
                 </div>
                 <div className='h-30 overflow-y-auto'>
-                    {employees.map((elem, idx) => {
+                    {employeesData?.map((elem, idx) => {
                         return <div key={idx} className='flex items-center mt-2 justify-start border-[1px] border-green-400 py-2 px-5 rounded'>
                             <h3 className='w-1/4 text-md'>{elem.username}</h3>
                             <h3 className='w-1/4 text-md'>{elem.assignedTasks.newTask.length}</h3>

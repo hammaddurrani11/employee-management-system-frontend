@@ -1,42 +1,33 @@
 import { useState, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import { handleError } from '../utils/apiHelper';
 import { DataContext } from '../../context/employeeContext'
 import { toast } from 'react-toastify';
 
 const Login = () => {
-    const { fetchAuthAndEmployeeData } = useContext(DataContext);
+    const { loginUser } = useContext(DataContext);
     let navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const submitHandler = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
 
-        const res = await fetch('https://employee-management-system-backend-eta.vercel.app/login', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email: email, password: password })
-        })
+        try {
+            const data = await loginUser({ email, password });
+            console.log(data);
+            toast.success("Login Successful");
 
-        const data = await res.json();
-
-        if (!res.ok) {
-            handleError(res, data);
-        }
-        else {
-            console.log("Logged In", data);
-            fetchAuthAndEmployeeData();
-            toast("Login Successful!");
-
-            if (data.role === 'admin') {
+            if (data?.role === "admin") {
                 navigate('/');
-            } else if (data.role === 'employee') {
+            }
+            else {
                 navigate('/employee');
             }
+        }
+        finally {
+            setIsLoading(false);
         }
     }
     return (
@@ -61,7 +52,9 @@ const Login = () => {
                         <Link to="/register"
                             className='text-gray-400 text-sm'>Dont Have an account? <span className='font-medium underline'>Signup Now</span></Link>
                         <button
-                            className='bg-green-500 py-3 px-5 hover:bg-green-700 cursor-pointer rounded w-50 text-white'>Login</button>
+                            className='bg-green-500 py-3 px-5 hover:bg-green-700 cursor-pointer rounded w-50 text-white'>
+                            {isLoading ? 'Logging In...' : 'Login'}
+                        </button>
                     </form>
                 </div>
             </div>

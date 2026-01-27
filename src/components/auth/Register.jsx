@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { handleError } from '../utils/apiHelper';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../instance/axiosInstance';
+import { DataContext } from '../../context/employeeContext';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -11,38 +12,18 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    const { registerAdmin } = useContext(DataContext);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // const res = await fetch('https://employee-management-system-backend-eta.vercel.app/register/admin', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify({
-        //         username: username,
-        //         email: email,
-        //         password: password
-        //     })
-        // })
-
         setIsLoading(true);
 
         try {
-            const res = await axiosInstance.post('/register/admin',
-                {
-                    username,
-                    email,
-                    password
-                });
-
-            console.log('Admin Registered:', res.data);
+            await registerAdmin({ username, email, password });
             toast.success("Registration Successful! Please Login.");
             navigate('/login', { replace: true });
         }
-        catch (error) {
-            handleError(error);
-        } finally {
+        finally {
             setIsLoading(false);
         }
 
