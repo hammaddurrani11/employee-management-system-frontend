@@ -14,24 +14,34 @@ const AdminDashboard = () => {
         if (!authChecked) return;
 
         if (!loggedInUserData) {
-            navigate('/login');
+            navigate('/login', { replace: true });
             return;
         }
 
         if (loggedInUserData.role === 'employee') {
-            navigate('/employee');
+            navigate('/employee', { replace: true });
         }
     }, [authChecked, loggedInUserData, navigate]);
 
     if (!authChecked) {
-        return <div>Loading...</div>;
+        return (
+            <div className='w-full h-screen grid place-content-center'>
+                <div
+                    className='h-8 w-8 text-white animate-spin border-5 border-white rounded-full'
+                />
+            </div>
+        )
+    }
+
+    if (!loggedInUserData || loggedInUserData?.role !== 'admin') {
+        return null;
     }
 
     return (
         <>
             <Header />
-            {/* <CreateTask />
-            <CreateUser /> */}
+            {/* <CreateTask /> */}
+            <CreateUser />
             <AllTasks />
         </>
     )

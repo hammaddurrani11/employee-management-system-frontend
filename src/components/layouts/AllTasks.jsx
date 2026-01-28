@@ -1,63 +1,46 @@
 import { useContext, useEffect, useState } from 'react'
 import { DataContext } from '../../context/employeeContext';
+import { toast } from 'react-toastify';
 
 const AllTasks = () => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const { fetchAllEmployeeData, employeesData } = useContext(DataContext);
+    const {
+        fetchAllEmployeeData,
+        employeesData,
+        updateEmployee,
+        deleteEmployee
+    } = useContext(DataContext);
 
     useEffect(() => {
         fetchAllEmployeeData();
-    },[])
+    }, []);
 
-    console.log(employeesData);
+    const updateCurrentEmployee = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
 
-    const updateEmployee = async (e) => {
-        // e.preventDefault();
-        // const res = await fetch(`https://employee-management-system-backend-eta.vercel.app/update-employee/${selectedEmployee._id}`, {
-        //     method: "put",
-        //     headers: {
-        //         'Content-type': 'application/json'
-        //     },
-        //     credentials: 'include',
-        //     body: JSON.stringify({
-        //         username: username,
-        //         email: email,
-        //         password: password
-        //     })
-        // })
+        try {
+            const id = selectedEmployee._id
 
-        // const data = await res.json();
+            await updateEmployee({ id, username, email, password });
+            toast.success('Employee Updated Successfully');
 
-        // if (!res.ok) {
-        //     handleError(res, data);
-        // }
-        // else {
-        //     console.log("Updated", data);
-        //     closePop();
-        //     fetchData();
-        // }
-
+            closePop();
+        }
+        finally {
+            setIsLoading(false);
+        }
     }
 
-    const deleteEmployee = async (elem) => {
-        // const res = await fetch(`https://employee-management-system-backend-eta.vercel.app/delete-employee/${elem._id}`, {
-        //     method: 'DELETE',
-        //     credentials: 'include'
-        // });
-
-        // const data = await res.json();
-
-        // if (!res.ok) {
-        //     handleError(res, data);
-        // }
-        // else {
-        //     console.log('Deleted', data);
-        //     fetchData();
-        // }
+    const deleteCurrentEmployee = async (elem) => {
+        const { _id } = elem;
+        await deleteEmployee({ _id });
+        toast.success('Employee Deleted Successfully');
     }
 
     const showPop = (elem) => {
@@ -85,21 +68,27 @@ const AllTasks = () => {
                     <h3 className='w-1/4 text-md'>Actions</h3>
                 </div>
                 <div className='h-30 overflow-y-auto'>
-                    {employeesData?.map((elem, idx) => {
-                        return <div key={idx} className='flex items-center mt-2 justify-start border-[1px] border-green-400 py-2 px-5 rounded'>
-                            <h3 className='w-1/4 text-md'>{elem.username}</h3>
-                            <h3 className='w-1/4 text-md'>{elem.assignedTasks.newTask.length}</h3>
-                            <h3 className='w-1/4 text-md'>{elem.assignedTasks.completed.length}</h3>
-                            <h3 className='w-1/4 text-md'>{elem.assignedTasks.failed.length}</h3>
-                            <div className='flex items-center gap-5 w-1/4'>
-                                <button onClick={() => showPop(elem)}><i className="fa-solid fa-pen-to-square"></i></button>
-                                <button onClick={() => deleteEmployee(elem)}><i className="fa-solid fa-trash"></i></button>
+                    {employeesData?.length > 0 ? (
+                        employeesData?.map((elem, idx) => {
+                            return <div key={idx} className='flex items-center mt-2 justify-start border-[1px] border-green-400 py-2 px-5 rounded'>
+                                <h3 className='w-1/4 text-md'>{elem.username}</h3>
+                                <h3 className='w-1/4 text-md'>{elem.assignedTasks.newTask.length}</h3>
+                                <h3 className='w-1/4 text-md'>{elem.assignedTasks.completed.length}</h3>
+                                <h3 className='w-1/4 text-md'>{elem.assignedTasks.failed.length}</h3>
+                                <div className='flex items-center gap-5 w-1/4'>
+                                    <button onClick={() => showPop(elem)}><i className="fa-solid fa-pen-to-square"></i></button>
+                                    <button onClick={() => deleteCurrentEmployee(elem)}><i className="fa-solid fa-trash"></i></button>
+                                </div>
                             </div>
+                        }
+                        )) : (
+                        <div>
+                            <h4 className='text-sm py-5'>No Employees Yet...</h4>
                         </div>
-                    })}
+                    )}
                 </div>
                 <div className='absolute pop w-full hidden items-center backdrop-blur justify-center h-screen top-20 left-0'>
-                    <form onSubmit={updateEmployee} className='flex items-center justify-center gap-5 flex-col w-90 bg-[#1c1c1c] p-10 border-[3px] border-green-500 rounded'>
+                    <form onSubmit={updateCurrentEmployee} className='flex items-center justify-center gap-5 flex-col w-90 bg-[#1c1c1c] p-10 border-[3px] border-green-500 rounded'>
                         <input
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
@@ -125,7 +114,9 @@ const AllTasks = () => {
                             <div onClick={closePop}
                                 className='bg-green-500 py-3 px-5 hover:bg-green-700 cursor-pointer rounded text-white'>Close</div>
                             <button type='submit'
-                                className='bg-green-500 py-3 px-5 hover:bg-green-700 cursor-pointer rounded text-white'>Update User</button>
+                                className='bg-green-500 py-3 px-5 hover:bg-green-700 cursor-pointer rounded text-white'>
+                                {!isLoading ? 'Update User' : 'Updating'}
+                            </button>
                         </div>
                     </form>
                 </div>

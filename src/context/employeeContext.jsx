@@ -7,7 +7,6 @@ export const DataContext = createContext();
 const employeeContext = ({ children }) => {
   const [employeesData, setEmployeesData] = useState([]);
   const [loggedInUserData, setLoggedInUserData] = useState(null);
-  const [employeeDataWithTask, setEmployeeDataWithTask] = useState(null);
   const [loggedInUserTask, setLoggedInUserTask] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
@@ -45,21 +44,6 @@ const employeeContext = ({ children }) => {
     }
     finally {
       setAuthChecked(true);
-    }
-  }
-
-  // Fetch logged-in employee data along with tasks
-  const fetchEmployeeDataWithTask = async () => {
-    setIsLoading(true);
-    try {
-      const { data } = await axiosInstance.get('/fetch-loggedin-user-with-tasks');
-      setEmployeeDataWithTask(data);
-    }
-    catch (error) {
-      console.error('Fetch employee data with task failed:', error);
-    }
-    finally {
-      setIsLoading(false);
     }
   }
 
@@ -127,6 +111,69 @@ const employeeContext = ({ children }) => {
     }
   }
 
+  // Create Task Function
+  const createTask = async (payload) => {
+    try {
+      const { data } = await axiosInstance.post('createtask', payload);
+      return data;
+    }
+    catch (error) {
+      handleError(error);
+      throw error;
+    }
+  }
+
+  // Create Employee Function
+  const createEmployee = async (payload) => {
+    try {
+      const { data } = await axiosInstance.post('/register/employee', payload);
+
+      await fetchAllEmployeeData();
+
+      return data;
+
+    }
+    catch (error) {
+      handleError(error);
+      throw error;
+    }
+  }
+
+  // Update Employee Function
+  const updateEmployee = async ({
+    id,
+    username,
+    email,
+    password
+  }) => {
+    try {
+      await axiosInstance.put(`/update-employee/${id}`, {
+        username,
+        email,
+        password
+      });
+
+      await fetchAllEmployeeData();
+    }
+    catch (error) {
+      handleError(error);
+      throw error;
+    }
+  }
+
+  // Delete Employee Function
+  const deleteEmployee = async ({ _id: id }) => {
+    try {
+      await axiosInstance.delete(`/delete-employee/${id}`);
+
+      await fetchAllEmployeeData();
+    }
+    catch (error) {
+      handleError(error);
+      throw error;
+    }
+  }
+
   useEffect(() => {
     fetchAuth();
   }, [])
@@ -141,9 +188,6 @@ const employeeContext = ({ children }) => {
           setLoggedInUserData,
           fetchAllEmployeeData,
           fetchAuth,
-          fetchEmployeeDataWithTask,
-          employeeDataWithTask,
-          setEmployeeDataWithTask,
           fetchEmployeeTask,
           loggedInUserTask,
           setLoggedInUserTask,
@@ -152,6 +196,10 @@ const employeeContext = ({ children }) => {
           logOutUser,
           isLoading,
           authChecked,
+          createTask,
+          createEmployee,
+          updateEmployee,
+          deleteEmployee,
         }
       }>
       <div>{children}</div>

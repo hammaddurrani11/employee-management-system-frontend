@@ -1,6 +1,5 @@
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { DataContext } from '../../context/employeeContext'
-import { handleError } from '../utils/apiHelper'
 import { toast } from 'react-toastify'
 
 const CreateUser = () => {
@@ -8,33 +7,17 @@ const CreateUser = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const { fetchData } = useContext(DataContext);
+    const { createEmployee } = useContext(DataContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const res = await fetch('https://employee-management-system-backend-eta.vercel.app/register/employee', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include',
-            body: JSON.stringify({ username: username, email: email, password: password })
-        })
+        await createEmployee({ username, email, password });
+        toast.success('Employee Created Successfully');
 
-        const data = await res.json();
-
-        if (!res.ok) {
-            handleError(res, data);
-        }
-        else {
-            console.log("Employee Created", data);
-            toast("Employee Created Successfully!");
-            setUsername('');
-            setEmail('');
-            setPassword('');
-            fetchData();
-        }
+        setUsername('');
+        setEmail('');
+        setPassword('');
     }
 
     return (
