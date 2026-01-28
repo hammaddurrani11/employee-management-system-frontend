@@ -115,6 +115,9 @@ const employeeContext = ({ children }) => {
   const createTask = async (payload) => {
     try {
       const { data } = await axiosInstance.post('createtask', payload);
+
+      await fetchAllEmployeeData();
+
       return data;
     }
     catch (error) {

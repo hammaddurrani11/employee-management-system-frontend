@@ -6,14 +6,21 @@ const CreateUser = () => {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [isLoading, setIsLoading] = useState(false);
 
     const { createEmployee } = useContext(DataContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
 
-        await createEmployee({ username, email, password });
-        toast.success('Employee Created Successfully');
+        try {
+            await createEmployee({ username, email, password });
+            toast.success('Employee Created Successfully');
+        }
+        finally {
+            setIsLoading(false);
+        }
 
         setUsername('');
         setEmail('');
@@ -58,7 +65,9 @@ const CreateUser = () => {
                                 required />
                         </div>
                         <div className='mt-5'>
-                            <button className='bg-green-500 w-full py-2 rounded cursor-pointer hover:bg-green-700'>Create Employee</button>
+                            <button className='bg-green-500 w-full py-2 rounded cursor-pointer hover:bg-green-700'>
+                                {!isLoading ? 'Create Employee' : 'Creating...'}
+                            </button>
                         </div>
                     </div>
                 </form>

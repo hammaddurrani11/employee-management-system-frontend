@@ -8,6 +8,8 @@ const AllTasks = () => {
     const [password, setPassword] = useState('');
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [deleteModal, setDeleteModal] = useState(false);
+    const [deletedUserData, setDeletedUserData] = useState({});
 
     const {
         fetchAllEmployeeData,
@@ -37,10 +39,17 @@ const AllTasks = () => {
         }
     }
 
-    const deleteCurrentEmployee = async (elem) => {
-        const { _id } = elem;
-        await deleteEmployee({ _id });
-        toast.success('Employee Deleted Successfully');
+    const deleteCurrentEmployee = async () => {
+        setIsLoading(true);
+        try {
+            const { _id } = deletedUserData;
+            await deleteEmployee({ _id });
+            toast.success('Employee Deleted Successfully');
+            setDeleteModal(false);
+        }
+        finally {
+            setIsLoading(false);
+        }
     }
 
     const showPop = (elem) => {
@@ -76,8 +85,12 @@ const AllTasks = () => {
                                 <h3 className='w-1/4 text-md'>{elem.assignedTasks.completed.length}</h3>
                                 <h3 className='w-1/4 text-md'>{elem.assignedTasks.failed.length}</h3>
                                 <div className='flex items-center gap-5 w-1/4'>
-                                    <button onClick={() => showPop(elem)}><i className="fa-solid fa-pen-to-square"></i></button>
-                                    <button onClick={() => deleteCurrentEmployee(elem)}><i className="fa-solid fa-trash"></i></button>
+                                    <button className='cursor-pointer' onClick={() => showPop(elem)}><i className="fa-solid fa-pen-to-square"></i></button>
+                                    <button className='cursor-pointer'
+                                        onClick={() => {
+                                            setDeletedUserData(elem)
+                                            setDeleteModal(true);
+                                        }}><i className="fa-solid fa-trash"></i></button>
                                 </div>
                             </div>
                         }
@@ -87,6 +100,7 @@ const AllTasks = () => {
                         </div>
                     )}
                 </div>
+
                 <div className='absolute pop w-full hidden items-center backdrop-blur justify-center h-screen top-20 left-0'>
                     <form onSubmit={updateCurrentEmployee} className='flex items-center justify-center gap-5 flex-col w-90 bg-[#1c1c1c] p-10 border-[3px] border-green-500 rounded'>
                         <input
@@ -115,13 +129,37 @@ const AllTasks = () => {
                                 className='bg-green-500 py-3 px-5 hover:bg-green-700 cursor-pointer rounded text-white'>Close</div>
                             <button type='submit'
                                 className='bg-green-500 py-3 px-5 hover:bg-green-700 cursor-pointer rounded text-white'>
-                                {!isLoading ? 'Update User' : 'Updating'}
+                                {!isLoading ? 'Update User' : 'Updating...'}
                             </button>
                         </div>
                     </form>
                 </div>
-            </div>
-        </div>
+
+                {deleteModal &&
+                    <div
+                        className='absolute left-0 top-0 h-screen w-full grid place-content-center backdrop-blur'
+                    >
+                        <div
+                            className='w-full px-10 bg-[#1c1c1c] text-center mx-auto border-[3px] border-green-500 rounded py-20'
+                        >
+                            <p>Are You Sure You Want to Delete This User?</p>
+                            <div className='flex gap-5 items-center justify-center mt-5'>
+                                <button
+                                    className='cursor-pointer bg-green-500 hover:bg-green-700 px-5 py-2 rounded text-black'
+                                    onClick={() => deleteCurrentEmployee()}
+                                >
+                                    {!isLoading ? 'Yes' : 'Deleting...'}
+                                </button>
+                                <button
+                                    className='cursor-pointer bg-green-500 hover:bg-green-700 px-5 py-2 rounded text-black'
+                                    onClick={() => setDeleteModal(false)}
+                                >No</button>
+                            </div>
+                        </div>
+                    </div >
+                }
+            </div >
+        </div >
     )
 }
 

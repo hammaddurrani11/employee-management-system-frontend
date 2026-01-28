@@ -1,5 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
-import { handleError } from '../utils/apiHelper';
+import { useState, useContext, useEffect } from 'react'
 import { DataContext } from '../../context/employeeContext';
 import { toast } from 'react-toastify';
 
@@ -10,54 +9,36 @@ const CreateTask = () => {
     const [taskCategory, setTaskCategory] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
     const [selectOptions, setSelectOptions] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const { fetchData, employees } = useContext(DataContext);
-
-    console.log('empData', employees);
+    const { employeesData, createTask } = useContext(DataContext);
 
     useEffect(() => {
-        if (employees.length > 0) {
-            const data = employees.map(emp => ({
+        if (employeesData.length > 0) {
+            const data = employeesData.map(emp => ({
                 label: emp.username,
                 id: emp._id
             }))
             setSelectOptions(data);
         }
-    }, [employees])
+    }, [employeesData])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoading(true);
 
-        const res = await fetch('https://employee-management-system-backend-eta.vercel.app/createtask', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                taskTitle: taskTitle,
-                taskDate: taskDate,
-                taskAssign: taskAssign,
-                taskCategory: taskCategory,
-                taskDescription: taskDescription
-            })
-        })
+        try {
+            await createTask({ taskTitle, taskDate, taskAssign, taskCategory, taskDescription });
+            toast.success('Task Created Successfully');
 
-        const data = await res.json();
-
-        if (!res.ok) {
-            handleError(res, data);
-        }
-        else {
-            console.log("Created", data);
-            toast("Task Created Successfully!");
             setTaskTitle('');
-            setTaskDate('');
+            setTaskDescription('');
             setTaskAssign('');
             setTaskCategory('');
-            setTaskDescription('');
-
-            fetchData();
+            setTaskDate('');
+        }
+        finally {
+            setIsLoading(false);
         }
     }
     return (
@@ -118,7 +99,9 @@ const CreateTask = () => {
                         value={taskDescription}
                         onChange={(e) => setTaskDescription(e.target.value)}
                         className='w-full outline-0 text-white p-2 text-sm border-gray-400 border-[1px] rounded'></textarea>
-                    <button className='bg-green-500 hover:bg-green-700 cursor-pointer w-full py-3 rounded mt-3'>Create Task</button>
+                    <button className='bg-green-500 hover:bg-green-700 cursor-pointer w-full py-3 rounded mt-3'>
+                        {!isLoading ? 'Create Task' : 'Creating...'}
+                    </button>
                 </div>
             </form>
         </div>
