@@ -82,7 +82,6 @@ const employeeContext = ({ children }) => {
     setIsLoading(true);
     try {
       const { data } = await axiosInstance.post('login', payload);
-      console.log("LOGIN RESPONSE:", data);
 
       localStorage.setItem('authToken', data.token);
 

@@ -16,7 +16,6 @@ const Login = () => {
 
         try {
             const data = await loginUser({ email, password });
-            console.log(data);
             toast.success("Login Successful");
 
             if (data?.role === "admin") {

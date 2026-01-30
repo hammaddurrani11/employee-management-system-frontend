@@ -13,8 +13,6 @@ const Tasklist = () => {
 
     const { assignedTasks } = loggedInUserTask || [];
 
-    console.log(loggedInUserTask)
-
     return (
         <>
             {!isLoading ? (

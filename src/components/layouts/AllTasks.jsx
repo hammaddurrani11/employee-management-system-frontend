@@ -58,7 +58,6 @@ const AllTasks = () => {
         setUsername(elem.username);
         setEmail(elem.email);
         setSelectedEmployee(elem);
-        console.log(elem._id);
     }
 
     const closePop = () => {
