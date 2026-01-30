@@ -1,5 +1,3 @@
-import React from 'react'
-
 const FailedTask = ({ data }) => {
   return (
     <div className='mx-2 py-5 mt-10 flex items-center flex-nowrap justify-start gap-3 overflow-x-auto'>

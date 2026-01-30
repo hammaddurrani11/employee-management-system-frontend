@@ -111,21 +111,6 @@ const employeeContext = ({ children }) => {
     }
   }
 
-  // Create Task Function
-  const createTask = async (payload) => {
-    try {
-      const { data } = await axiosInstance.post('createtask', payload);
-
-      await fetchAllEmployeeData();
-
-      return data;
-    }
-    catch (error) {
-      handleError(error);
-      throw error;
-    }
-  }
-
   // Create Employee Function
   const createEmployee = async (payload) => {
     try {
@@ -177,6 +162,47 @@ const employeeContext = ({ children }) => {
     }
   }
 
+  // Create Task Function
+  const createTask = async (payload) => {
+    try {
+      const { data } = await axiosInstance.post('createtask', payload);
+
+      await fetchAllEmployeeData();
+
+      return data;
+    }
+    catch (error) {
+      handleError(error);
+      throw error;
+    }
+  }
+
+  // Complete Task Function
+  const completeTask = async ({ id }) => {
+    try {
+      await axiosInstance.put(`/complete-task/${id}`);
+
+      await fetchEmployeeTask();
+    }
+    catch (error) {
+      handleError(error);
+      throw error;
+    }
+  }
+
+  // Failed Task Function
+  const failedTask = async ({ id }) => {
+    try {
+      await axiosInstance.put(`/failed-task/${id}`);
+
+      await fetchEmployeeTask();
+    }
+    catch (error) {
+      handleError(error);
+      throw error;
+    }
+  }
+
   useEffect(() => {
     fetchAuth();
   }, [])
@@ -203,6 +229,8 @@ const employeeContext = ({ children }) => {
           createEmployee,
           updateEmployee,
           deleteEmployee,
+          completeTask,
+          failedTask
         }
       }>
       <div>{children}</div>

@@ -1,47 +1,21 @@
-import React, { useContext } from 'react';
-import { handleError } from '../utils/apiHelper';
+import { useContext } from 'react';
 import { DataContext } from '../../context/employeeContext';
 import { toast } from 'react-toastify';
 
-const NewTask = ({data}) => {
+const NewTask = ({ data }) => {
 
-  const { fetchAuthAndEmployeeData } = useContext(DataContext);
+  const { completeTask, failedTask } = useContext(DataContext);
 
-  const updateTask = async (e) => {
-    console.log(e);
-    const res = await fetch(`https://employee-management-system-backend-eta.vercel.app/complete-task/${e._id}`, {
-      method: 'PUT',
-      credentials: 'include'
-    })
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      handleError(res, data);
-    }
-    else {
-      console.log("Task marked as completed", data);
-      toast("Task marked as completed!");
-      fetchAuthAndEmployeeData();
-    }
+  const updateTaskFunction = async (e) => {
+    const { _id: id } = e;
+    await completeTask({ id });
+    toast.success("Marked as Complete");
   }
 
-  const failedTask = async (e) => {
-    const res = await fetch(`https://employee-management-system-backend-eta.vercel.app/failed-task/${e._id}`, {
-      method: 'PUT',
-      credentials: 'include'
-    })
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      handleError(res, data);
-    }
-    else {
-      console.log("Task Updated", data);
-      toast("Task marked as failed!");
-      fetchAuthAndEmployeeData();
-    }
+  const failedTaskFunction = async (e) => {
+    const { _id: id } = e;
+    await failedTask({ id });
+    toast.success("Marked as Failed");
   }
 
   return (
@@ -55,9 +29,9 @@ const NewTask = ({data}) => {
           <h2 className='text-xl font-semibold mt-5'>{data.taskTitle}</h2>
           <p className='text-sm font-medium'>{data.taskDescription}</p>
           <div className='flex items-center justify-center mt-5 gap-2'>
-            <button onClick={() => updateTask(data)}
+            <button onClick={() => updateTaskFunction(data)}
               className='bg-green-500 rounded text-sm px-2 py-1 text-white hover:bg-green-700 cursor-pointer'>Mark as Complete</button>
-            <button onClick={() => failedTask(data)}
+            <button onClick={() => failedTaskFunction(data)}
               className='bg-red-500 rounded text-sm px-2 py-1 text-white hover:bg-red-700 cursor-pointer'>Mark as Failed</button>
           </div>
         </div>
