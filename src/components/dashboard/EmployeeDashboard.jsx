@@ -2,7 +2,7 @@ import { useEffect, useContext } from 'react'
 import Header from '../layouts/Header'
 import TaskListNumber from '../layouts/TaskListNumber'
 import { useNavigate } from 'react-router-dom'
-import Tasklist from '../tasks/Tasklist'
+import Tasklist from '../tasks/TaskList'
 import { DataContext } from '../../context/employeeContext'
 
 const EmployeeDashboard = () => {
